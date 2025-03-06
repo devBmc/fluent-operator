@@ -32,6 +32,10 @@ type Forward struct {
 	RequireAckResponse *bool `json:"requireAckResponse,omitempty"`
 	// A key string known by the remote Fluentd used for authorization.
 	SharedKey string `json:"sharedKey,omitempty"`
+	// Compress option to support gzip compression
+	// Set payload compression mechanism. Option available is 'gzip'
+	// +kubebuilder:validation:Enum=gzip
+	Compress string `json:"compress,omitempty"`
 	// Use this option to connect to Fluentd with a zero-length secret.
 	EmptySharedKey *bool `json:"emptySharedKey,omitempty"`
 	// Specify the username to present to a Fluentd server that enables user_auth.
@@ -92,6 +96,9 @@ func (f *Forward) Params(sl plugins.SecretLoader) (*params.KVs, error) {
 	}
 	if f.SelfHostname != "" {
 		kvs.Insert("Self_Hostname", f.SelfHostname)
+	}
+	if f.Compress != "" {
+		kvs.Insert("Compress", f.Compress)
 	}
 	if f.TLS != nil {
 		tls, err := f.TLS.Params(sl)
